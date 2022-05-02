@@ -2,22 +2,21 @@ import tkinter as tk
 import random
 
 # variables
-
-taille = 12
+taille = 5
 matrice, tempo = [], []
 HEIGHT = 500
 WIDTH = 500
-couleurs = {0 : "lemonchiffon", 1 : "royalblue", 2 : "darkred", 3 : "dimgray"}
+couleurs = {0 : "lemonchiffon", 1 : "royalblue", 2 : "darkred"}
 
-proie_ini = 60
-age_proie = 10
+proie_ini = 10
+age_proie = 50
 proie = (1, age_proie, None, None)
 
-predateur_ini = 30
-age_predateur = 13
-energie_predateur = 7
-energie_reproduction = 10
-miam = 5
+predateur_ini = 5
+age_predateur = 18
+energie_predateur = 13
+energie_reproduction = 24
+miam = 10
 predateur = (2, age_predateur, energie_predateur, energie_reproduction)
 flair = 2
 
@@ -40,12 +39,14 @@ def tours() :
     """effectue un tour complet de simulation"""
     deplacement()
     reproduction_predateur()
+    reproduction_proie()
     age()
     faim()
     affichage()
     #canvas.after(250, tours)
-    for i in range(3) :
-        print(matrice[i+1])
+    #for i in range(3) :
+    #print("mat 1 :")
+    #print(matrice)
 
 def affichage() :
     """affiche les proies et les prédateurs sur le canvas"""
@@ -99,11 +100,33 @@ def case_occuper(matrice, x1, y1, x2, y2, pos_ini) :
 
 def reproduction_proie() :
     """ajoute une nouvelle proie si elles sont côte à côte"""
-    for i in range(taille) :
-        for j in range(taille) :
-            if matrice[i][j][0] == 1 and matrice[i][j+1] == 1 or matrice[i][j-1] == 1 \
-                or matrice[i+1][j] == 1 or matrice[i-1][j] == 1 :
-                pass
+    matrice2 = []
+    for k in range(len(matrice)) :
+        matrice2.append([])
+        for l in matrice[k] :
+            matrice2[k].append(l)
+    for i in range(1, len(matrice)-1) :
+        for j in range(1, len(matrice[i])-1) :
+            if matrice2[i][j][0] != 1 :
+                continue
+            else :
+                if matrice2[i][j][0] == 1 and matrice2[i][j+1][0] == 1 and not \
+                    (matrice[i+1][j][0] != 0 and matrice[i-1][j][0] != 0 and matrice[i][j+1][0] != 0 and matrice[i][j-1][0] != 0 and matrice[i-1][j-1][0] != 0 \
+                        and matrice[i-1][j+1][0] != 0 and matrice[i+1][j-1][0] != 0 and matrice[i+1][j+1][0] != 0 \
+                            and matrice[i-1][j+2][0] != 0 and matrice[i][j+2][0] != 0 and matrice[i+1][j+2][0] != 0) :  # si c'est cote a cote
+                    case_occuper(matrice, i-1, i+1, j-1, j+2, None)
+                    matrice[random_ligne][random_colonne] = proie
+                    matrice2[i][j], matrice2[i][j+1] = (0, 0), (0, 0)
+                elif matrice2[i][j][0] == 1 and matrice2[i+1][j][0] == 1 and not \
+                    (matrice[i+1][j][0] != 0 and matrice[i-1][j][0] != 0 and matrice[i][j+1][0] != 0 and matrice[i][j-1][0] != 0 and matrice[i-1][j-1][0] != 0 \
+                        and matrice[i-1][j+1][0] != 0 and matrice[i+1][j-1][0] != 0 and matrice[i+1][j+1][0] != 0 \
+                            and matrice[i+2][j-1][0] != 0 and matrice[i+2][j][0] != 0 and matrice[i+2][j+1][0] != 0) :  # si c'est cote a cote
+                    case_occuper(matrice, i-1, i+2, j-1, j+1, None)
+                    matrice[random_ligne][random_colonne] = proie
+                    matrice2[i][j], matrice2[i+1][j] = (0, 0), (0, 0)
+            
+    #print(matrice2)
+    return matrice
 
 def reproduction_predateur() :
     """ajoute un prédateur si ils ont assez d'énergie necessaire"""
@@ -161,6 +184,8 @@ for i in range(taille) :
 
 # lancement
 
+
+
 for i in range(proie_ini) :
     case_occuper(matrice, 1, taille, 1, taille, None)
     matrice[random_ligne][random_colonne] = proie
@@ -169,7 +194,7 @@ for i in range(predateur_ini) :
     matrice[random_ligne][random_colonne] = predateur
 affichage()
 
-tours()
+#tours()
 racine.mainloop()
 
 # pour plus tard faire des déplacements aléatoire et pas de gauche a droite car sinon les trucs se bloquent en haut
