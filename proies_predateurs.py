@@ -2,24 +2,24 @@ import tkinter as tk
 import random
 
 # variables
-taille = 5
+taille = 30
 matrice, tempo = [], []
-HEIGHT = 500
-WIDTH = 500
+HEIGHT = 800
+WIDTH = 800
 couleurs = {0 : "lemonchiffon", 1 : "royalblue", 2 : "darkred"}
 
-proie_ini = 10
-age_proie = 50
+proie_ini = 450
+age_proie = 15
 proie = (1, age_proie, None, None)
 
-predateur_ini = 5
-age_predateur = 18
+predateur_ini = 10
+age_predateur = 25
 energie_predateur = 13
 energie_reproduction = 24
-miam = 10
+miam = 8
 predateur = (2, age_predateur, energie_predateur, energie_reproduction)
-flair = 2
-
+FLAIR = 3
+spot = False
 # création listes
 for i in range(taille) :
     matrice.append([])
@@ -37,16 +37,18 @@ matrice.insert(0, tempo)
 
 def tours() :
     """effectue un tour complet de simulation"""
+    flair()
     deplacement()
     reproduction_predateur()
     reproduction_proie()
     age()
     faim()
     affichage()
-    #canvas.after(250, tours)
-    #for i in range(3) :
+    #canvas.after(500, tours)
+    #for i in range(1, taille+1) :
     #print("mat 1 :")
-    #print(matrice)
+    #    print(matrice[i])
+    #print('\n')
 
 def affichage() :
     """affiche les proies et les prédateurs sur le canvas"""
@@ -70,10 +72,11 @@ def deplacement() :
                 matrice2[random_ligne][random_colonne] = j
                 cpt += 1
             if j[0] == 2 :
-                case_occuper(matrice, i-1, i+1, cpt-1, cpt+1, matrice[i][cpt])
-                if test == True :
-                    matrice2[i][cpt] = (0, 0)
-                    matrice2[random_ligne][random_colonne] = j
+                if spot == False :  # si le prédateur a pas manger avec FLAIR
+                    case_occuper(matrice, i-1, i+1, cpt-1, cpt+1, matrice[i][cpt])
+                    if test == True :  # sert quand ya pas de flair du coup il mange aléatoirement
+                        matrice2[i][cpt] = (0, 0)
+                        matrice2[random_ligne][random_colonne] = j
                 cpt += 1
     matrice = matrice2
     affichage()
@@ -161,16 +164,62 @@ def faim() :
                 matrice[i][j] = (matrice[i][j][0], matrice[i][j][1], matrice[i][j][2]-1, matrice[i][j][3])
                 if matrice[i][j][2] <= 0 :
                     matrice[i][j] = (0, 0)
-    return matrice    
+    return matrice
+
+def flair() :
+    """permet aux prédateurs de détécter les proies proches et de soit les manger si elles sont a distance de 1 ou alors se rapprocher d'une proie dans la range FLAIR"""
+    global spot, matrice
+    matrice2 = []
+    for a in range(len(matrice)) :  # recopie la matrice pour éviter que le meme prédateur joue deux fois ou plus
+        matrice2.append([])
+        for b in matrice[a] :
+            matrice2[a].append(b)
+    for i in range(len(matrice)) :
+        for j in range(len(matrice[i])) :
+            if matrice[i][j][0] != 2 :
+                continue
+            else :  # quand u nprédateur est détécter
+                proie_proche, proie_coter = [], []
+                spot = False
+                i_min , i_max, j_min, j_max = 0, 0, 0, 0
+                if i-FLAIR < 0 : i_min = -(i-FLAIR)
+                if i+FLAIR > taille+1 : i_max = i+FLAIR-taille
+                if j-FLAIR < 0 : j_min = -(j-FLAIR)
+                if j+FLAIR > taille+1 : j_max = j+FLAIR-taille
+                for k in range(i-FLAIR+i_min, i+FLAIR+1-i_max) :  # liste toutes les proies proches de distance FLAIR et met leur position dans la liste proie_proche
+                    for l in range(j-FLAIR+j_min, j+FLAIR+1-j_max) :
+                        if matrice[k][l][0] == 1 :
+                            spot = True
+                            proie_proche.append((k, l))
+                for m in range(len(proie_proche)):  # fait une liste des proies a distance 1 ou -1 du prédateur nommer proie_coter
+                    if i-1 <= proie_proche[m][0] <= i+1 and j-1 <= proie_proche[m][1] <= j+1 and spot == True:
+                        proie_coter.append(proie_proche[m])
+                if len(proie_coter) != 0 and len(proie_proche) != 0 :
+                    choose = random.randint(0, len(proie_coter)-1)
+                    if matrice[proie_coter[choose][0]][proie_coter[choose][1]][0] == 1 and matrice2[proie_coter[choose][0]][proie_coter[choose][1]][0] == 1 :
+                        matrice2[proie_coter[choose][0]][proie_coter[choose][1]] = (matrice[i][j][0], matrice[i][j][1], matrice[i][j][2]+miam, matrice[i][j][3])
+                        matrice2[i][j] = (0, 0)
+                elif len(proie_coter) == 0 and len(proie_proche) != 0 :
+                    choose = random.randint(0, len(proie_proche)-1)
+                    if proie_proche[choose][0] < i : new_i = -1
+                    elif proie_proche[choose][0] > i : new_i = 1
+                    else : new_i = 0
+                    if proie_proche[choose][1] < j : new_j = -1
+                    elif proie_proche[choose][1] > j : new_j = 1
+                    else : new_j = 0
+                    matrice2[i+new_i][j+new_j] = matrice[i][j]
+                    matrice2[i][j] = (0, 0)
+    
+    matrice = matrice2
+    return matrice, spot
 
 # tkinter
 racine = tk.Tk()
 canvas = tk.Canvas(height=HEIGHT, width=WIDTH, bg="black")
 bouton1 = tk.Button(text="move", command=tours)
-
 canvas.grid()
 bouton1.grid()
-
+#racine.bind("<a>", tours)
 
 # interface début
 
@@ -196,5 +245,3 @@ affichage()
 
 #tours()
 racine.mainloop()
-
-# pour plus tard faire des déplacements aléatoire et pas de gauche a droite car sinon les trucs se bloquent en haut
