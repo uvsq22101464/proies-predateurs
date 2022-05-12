@@ -2,15 +2,18 @@ import tkinter as tk
 import random
 
 # variables
-taille = 30
+taille = 10
 matrice, tempo = [], []
-HEIGHT = 800
-WIDTH = 800
+HEIGHT = 700
+WIDTH = 700
 couleurs = {0 : "lemonchiffon", 1 : "royalblue", 2 : "darkred"}
 
-proie_ini = 450
+proie_ini = 80
 age_proie = 15
 proie = (1, age_proie, None, None)
+l_proie = [proie_ini]
+FUITE = 0  # inchangeable
+flight = False
 
 predateur_ini = 10
 age_predateur = 25
@@ -18,8 +21,11 @@ energie_predateur = 13
 energie_reproduction = 24
 miam = 8
 predateur = (2, age_predateur, energie_predateur, energie_reproduction)
-FLAIR = 3
-spot = False
+l_predateur = [predateur_ini]
+FLAIR = 8
+hunt = False
+
+var_boucle = False
 # création listes
 for i in range(taille) :
     matrice.append([])
@@ -37,18 +43,18 @@ matrice.insert(0, tempo)
 
 def tours() :
     """effectue un tour complet de simulation"""
+    safe_area()
     flair()
     deplacement()
     reproduction_predateur()
     reproduction_proie()
     age()
     faim()
+    compteur()
     affichage()
-    #canvas.after(500, tours)
-    #for i in range(1, taille+1) :
-    #print("mat 1 :")
-    #    print(matrice[i])
-    #print('\n')
+    if var_boucle == True :
+        canvas.after(500, tours)
+    
 
 def affichage() :
     """affiche les proies et les prédateurs sur le canvas"""
@@ -59,22 +65,27 @@ def affichage() :
 def deplacement() :
     """déplace les proies et les prédateurs"""
     global matrice, matrice2, cpt, i
-    matrice2 = matrice
-    for i in range(len(matrice)) :
+    matrice2 = []
+    for a in range(len(matrice)) :
+        matrice2.append([])
+        for b in range(len(matrice[a])) :
+            matrice2[a].append(matrice[a][b])
+    for i in range(1, len(matrice)-1) :
         cpt = 0
         for j in matrice[i] :
             if j[0] == 0 or j[0] == 3 :
                 cpt += 1
                 continue
             if j[0] == 1 :
-                case_occuper(matrice, i-1, i+1, cpt-1, cpt+1, matrice[i][cpt])
-                matrice2[i][cpt] = (0, 0)
-                matrice2[random_ligne][random_colonne] = j
+                if flight == False :
+                    case_occuper(matrice2, i-1, i+1, cpt-1, cpt+1, matrice[i][cpt])
+                    matrice2[i][cpt] = (0, 0)
+                    matrice2[random_ligne][random_colonne] = j
                 cpt += 1
             if j[0] == 2 :
-                if spot == False :  # si le prédateur a pas manger avec FLAIR
-                    case_occuper(matrice, i-1, i+1, cpt-1, cpt+1, matrice[i][cpt])
-                    if test == True :  # sert quand ya pas de flair du coup il mange aléatoirement
+                if hunt == False :  # si le prédateur a pas manger avec FLAIR
+                    case_occuper(matrice2, i-1, i+1, cpt-1, cpt+1, matrice[i][cpt])
+                    if test == True :  # se deplace normalement si il a pas manger
                         matrice2[i][cpt] = (0, 0)
                         matrice2[random_ligne][random_colonne] = j
                 cpt += 1
@@ -82,23 +93,23 @@ def deplacement() :
     affichage()
     return matrice
 
-def case_occuper(matrice, x1, y1, x2, y2, pos_ini) :
+def case_occuper(mat, x1, y1, x2, y2, pos_ini) :
     """permet de vérifier si une case est occuper a la position matrice[random_ligne][random_colonne], permet aussi a un prédateurs de manger une proie"""
     global random_ligne, random_colonne, test
     boucle = True
     test = True
     random_ligne = random.randint(x1, y1)
     random_colonne = random.randint(x2, y2)
-    while matrice[random_ligne][random_colonne] != (0, 0) and boucle == True :  # tant que la position est prise on recherche une position libre
+    while mat[random_ligne][random_colonne] != (0, 0) and boucle == True :  # tant que la position est prise on recherche une position libre
         random_ligne = random.randint(x1, y1)
         random_colonne = random.randint(x2, y2)
         if pos_ini != None and random_ligne == i and  random_colonne == cpt :
             boucle = False
-        if pos_ini != None and matrice[i][cpt][0] == 2 and matrice[random_ligne][random_colonne][0] == 1 :
-            matrice[random_ligne][random_colonne] = (matrice[i][cpt][0], matrice[i][cpt][1], matrice[i][cpt][2]+miam, matrice[i][cpt][3])
-            matrice[i][cpt] = (0, 0)
+        if pos_ini != None and mat[i][cpt][0] == 2 and mat[random_ligne][random_colonne][0] == 1 :
+            mat[random_ligne][random_colonne] = (mat[i][cpt][0], mat[i][cpt][1], mat[i][cpt][2]+miam, mat[i][cpt][3])
+            mat[i][cpt], matrice[random_ligne][random_colonne] = (0, 0), (0, 0)
             test = False
-    return random_ligne, random_colonne, matrice, test
+    return random_ligne, random_colonne, mat, test
 
 
 def reproduction_proie() :
@@ -167,8 +178,10 @@ def faim() :
     return matrice
 
 def flair() :
-    """permet aux prédateurs de détécter les proies proches et de soit les manger si elles sont a distance de 1 ou alors se rapprocher d'une proie dans la range FLAIR"""
-    global spot, matrice
+    """permet aux prédateurs de détécter les proies proches et de soit les manger \
+        si elles sont a distance de 1 ou alors se rapprocher d'une proie dans la range FLAIR \
+            permet aussi aux proies de fuire les prédateurs"""
+    global hunt, matrice, flight, safe_spot
     matrice2 = []
     for a in range(len(matrice)) :  # recopie la matrice pour éviter que le meme prédateur joue deux fois ou plus
         matrice2.append([])
@@ -176,11 +189,9 @@ def flair() :
             matrice2[a].append(b)
     for i in range(len(matrice)) :
         for j in range(len(matrice[i])) :
-            if matrice[i][j][0] != 2 :
-                continue
-            else :  # quand u nprédateur est détécter
+            if matrice[i][j][0] == 2 :  # quand un prédateur est détecté
                 proie_proche, proie_coter = [], []
-                spot = False
+                hunt = False
                 i_min , i_max, j_min, j_max = 0, 0, 0, 0
                 if i-FLAIR < 0 : i_min = -(i-FLAIR)
                 if i+FLAIR > taille+1 : i_max = i+FLAIR-taille
@@ -188,11 +199,11 @@ def flair() :
                 if j+FLAIR > taille+1 : j_max = j+FLAIR-taille
                 for k in range(i-FLAIR+i_min, i+FLAIR+1-i_max) :  # liste toutes les proies proches de distance FLAIR et met leur position dans la liste proie_proche
                     for l in range(j-FLAIR+j_min, j+FLAIR+1-j_max) :
-                        if matrice[k][l][0] == 1 :
-                            spot = True
+                        if matrice2[k][l][0] == 1 :
+                            hunt = True
                             proie_proche.append((k, l))
                 for m in range(len(proie_proche)):  # fait une liste des proies a distance 1 ou -1 du prédateur nommer proie_coter
-                    if i-1 <= proie_proche[m][0] <= i+1 and j-1 <= proie_proche[m][1] <= j+1 and spot == True:
+                    if i-1 <= proie_proche[m][0] <= i+1 and j-1 <= proie_proche[m][1] <= j+1 and hunt == True:
                         proie_coter.append(proie_proche[m])
                 if len(proie_coter) != 0 and len(proie_proche) != 0 :
                     choose = random.randint(0, len(proie_coter)-1)
@@ -207,19 +218,123 @@ def flair() :
                     if proie_proche[choose][1] < j : new_j = -1
                     elif proie_proche[choose][1] > j : new_j = 1
                     else : new_j = 0
+                    if matrice2[i+new_i][j+new_j][0] == 0 :
+                        matrice2[i+new_i][j+new_j] = matrice[i][j]
+                        matrice2[i][j] = (0, 0)
+                    else :
+                        hunt = False
+
+            if matrice[i][j][0] == 1 and matrice2[i][j][0] == 1 :
+                case_autour = []
+                flight = False
+                i_min , i_max, j_min, j_max = 0, 0, 0, 0
+                if i-FUITE < 0 : i_min = -(i-FUITE)
+                if i+FUITE > taille+1 : i_max = i+FUITE-taille
+                if j-FUITE < 0 : j_min = -(j-FUITE)
+                if j+FUITE > taille+1 : j_max = j+FUITE-taille
+                for k in range(i-FUITE+i_min, i+FUITE+1-i_max) :  # regarde si il y a des prédateurs proches si oui flight devient True
+                    for l in range(j-FUITE+j_min, j+FUITE+1-j_max) :
+                        if matrice[k][l][0] == 2 :
+                            flight = True
+                tempo = -1
+                for m in range(i-1, i+2):  # regarde autour de la proie pour savoir si il y a une place safe
+                    case_autour.append([])
+                    tempo += 1
+                    for n in range(j-1, j+2):
+                        case_autour[tempo].append(safe_spot[m][n])
+                pos_safe = []
+                for o in range(-1, 2) :
+                    for p in range(-1, 2) :
+                        if case_autour[o+1][p+1] == 0 :
+                            pos_safe.append((o, p))
+                if len(pos_safe) != 0 and flight == True :
+                    choose = random.choice(pos_safe)
+                    new_i, new_j = choose[0], choose[1]
                     matrice2[i+new_i][j+new_j] = matrice[i][j]
-                    matrice2[i][j] = (0, 0)
-    
+                    matrice2[i][j] = (0, 0) 
+                else :
+                    flight = False
     matrice = matrice2
-    return matrice, spot
+    return matrice, hunt, flight
+
+def compteur() :
+    """affiche le nombre de proies et de prédateurs"""
+    global nb_proie, nb_predateur
+    nb_proie, nb_predateur = 0, 0
+    for i in range(len(matrice)) :
+        for j in range(len(matrice[i])) :
+            if matrice[i][j][0] == 1 :
+                nb_proie += 1
+            elif matrice[i][j][0] == 2 :
+                nb_predateur += 1
+    l_proie.append(nb_proie)
+    l_predateur.append(nb_predateur)
+    new_proie = l_proie[-1] - l_proie[-2]
+    new_predateur = l_predateur[-1] - l_predateur[-2]
+    del(l_proie[-2])
+    del(l_predateur[-2])
+    if new_proie <= 0 :
+        label_nbproie.config(text=str(nb_proie) + " (" + str(new_proie) + ")", fg="royalblue")
+    if new_proie > 0 :
+        label_nbproie.config(text=str(nb_proie) + " (+" + str(new_proie) + ")", fg="royalblue")
+    if new_predateur <= 0 :
+        label_nbpredateur.config(text=str(nb_predateur) + " (" + str(new_predateur) + ")", fg="darkred")
+    if new_predateur > 0 :
+        label_nbpredateur.config(text=str(nb_predateur) + " (+" + str(new_predateur) + ")", fg="darkred")
+    return nb_proie, nb_predateur
+
+def safe_area() :
+    """crée une matrice réunissant les cases ou les présateurs peuvent aller"""
+    global safe_spot
+    safe_spot = []
+    for i in range(len(matrice)) :
+        safe_spot.append([])
+        for j in range(len(matrice[i])) :
+            if matrice[i][j][0] == 3 or matrice[i][j][0] == 1 :
+                safe_spot[i].insert(j, 1)
+            if matrice[i][j][0] == 0 :
+                safe_spot[i].insert(j, 0)
+            if matrice[i][j][0] == 2 :
+                safe_spot[i].insert(j, 2)
+    for k in range(len(safe_spot)) :
+        for l in range(len(safe_spot[k])) :
+            if safe_spot[k][l] == 2 :
+                for m in range(k-1, k+2):
+                    for n in range(l-1, l+2):
+                        if m == k and n == l :
+                            safe_spot[m][n] = 0
+                        safe_spot[m][n] = 3
+    return safe_spot
+
+def boucle() :
+    """permet de lancer la simulation en continue"""
+    global var_boucle
+    if var_boucle == False :
+        var_boucle = True
+    else :
+        var_boucle = False
+    tours()
+    return var_boucle
 
 # tkinter
+
 racine = tk.Tk()
+racine.title("Chasse")
 canvas = tk.Canvas(height=HEIGHT, width=WIDTH, bg="black")
 bouton1 = tk.Button(text="move", command=tours)
-canvas.grid()
-bouton1.grid()
-#racine.bind("<a>", tours)
+label_proie = tk.Label(text="nombre de proies :")
+label_predateur = tk.Label(text="nombre de prédateurs :")
+label_nbproie = tk.Label(text=str(proie_ini), fg="royalblue")
+label_nbpredateur = tk.Label(text=str(predateur_ini), fg="darkred")
+bouton2 = tk.Button(text="Boucle", command=boucle)
+
+label_proie.grid(row=0, column=0)
+label_predateur.grid(row=1, column=0)
+label_nbproie.grid(row=0, column=1)
+label_nbpredateur.grid(row=1, column=1)
+canvas.grid(columnspan=2, row=2)
+bouton1.grid(columnspan=2)
+bouton2.grid(columnspan=2)
 
 # interface début
 
@@ -233,8 +348,6 @@ for i in range(taille) :
 
 # lancement
 
-
-
 for i in range(proie_ini) :
     case_occuper(matrice, 1, taille, 1, taille, None)
     matrice[random_ligne][random_colonne] = proie
@@ -243,5 +356,4 @@ for i in range(predateur_ini) :
     matrice[random_ligne][random_colonne] = predateur
 affichage()
 
-#tours()
 racine.mainloop()
