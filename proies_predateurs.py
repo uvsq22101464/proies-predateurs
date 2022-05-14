@@ -1,8 +1,6 @@
 import tkinter as tk
 import random
 
-from numpy import True_
-
 # variables
 taille = 10
 matrice, tempo = [], []
@@ -92,8 +90,7 @@ def deplacement():
                 if hunt is False:  # si le prédateur a pas manger avec FLAIR
                     case_occuper(matrice2, i-1, i+1, cpt-1, cpt+1, matrice[i][
                         cpt])
-                    if test is True:
-                        '''se deplace normalement si il a pas manger'''
+                    if test is True:  # deplace normalement si pas manger
                         matrice2[i][cpt] = (0, 0)
                         matrice2[random_ligne][random_colonne] = j
                 cpt += 1
@@ -111,7 +108,7 @@ def case_occuper(mat, x1, y1, x2, y2, pos_ini):
     test = True
     random_ligne = random.randint(x1, y1)
     random_colonne = random.randint(x2, y2)
-    while mat[random_ligne][random_colonne] != (0, 0) and boucle == True:
+    while mat[random_ligne][random_colonne] != (0, 0) and boucle is True:
         # tant que la position est prise on recherche une position libre
         random_ligne = random.randint(x1, y1)
         random_colonne = random.randint(x2, y2)
@@ -163,8 +160,6 @@ def reproduction_proie():
                     case_occuper(matrice, i-1, i+2, j-1, j+1, None)
                     matrice[random_ligne][random_colonne] = proie
                     matrice2[i][j], matrice2[i+1][j] = (0, 0), (0, 0)
-
-    # print(matrice2)
     return matrice
 
 
@@ -247,7 +242,7 @@ def flair():
                     # fait une liste des proies a distance 1 ou -1 du
                     # prédateur nommer proie_coter
                     if i-1 <= proie_proche[m][0] <= i+1 and j-1 <= \
-                            proie_proche[m][1] <= j+1 and hunt == True:
+                            proie_proche[m][1] <= j+1 and hunt is True:
                         proie_coter.append(proie_proche[m])
                 if len(proie_coter) != 0 and len(proie_proche) != 0:
                     choose = random.randint(0, len(proie_coter)-1)
@@ -308,7 +303,7 @@ def flair():
                     for p in range(-1, 2):
                         if case_autour[o+1][p+1] == 0:
                             pos_safe.append((o, p))
-                if len(pos_safe) != 0 and flight == True:
+                if len(pos_safe) != 0 and flight is True:
                     choose = random.choice(pos_safe)
                     new_i, new_j = choose[0], choose[1]
                     matrice2[i+new_i][j+new_j] = matrice[i][j]
@@ -377,7 +372,7 @@ def safe_area():
 def boucle():
     """permet de lancer la simulation en continue"""
     global var_boucle
-    if var_boucle:
+    if var_boucle is False:
         var_boucle = True
     else:
         var_boucle = False
