@@ -2,13 +2,13 @@ import tkinter as tk
 import random
 
 # variables
-taille = 10
+taille = 30
 matrice, tempo = [], []
 HEIGHT = 700
 WIDTH = 700
 couleurs = {0: "lemonchiffon", 1: "royalblue", 2: "darkred"}
 
-proie_ini = 80
+proie_ini = 600
 age_proie = 15
 proie = (1, age_proie, None, None)
 l_proie = [proie_ini]
@@ -22,7 +22,7 @@ energie_reproduction = 24
 miam = 8
 predateur = (2, age_predateur, energie_predateur, energie_reproduction)
 l_predateur = [predateur_ini]
-FLAIR = 8
+FLAIR = 3
 hunt = False
 
 var_boucle = False
