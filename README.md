@@ -8,7 +8,7 @@ https://github.com/uvsq22101464/proies-predateurs
 
 # Fonctionnement :
 
-Quand le code est éxecuté une fenêtre graphique s'ouvre, l'utilisateur peut alors appuyer sur le bouton "move" pour voir la simulation étape par étape ou alors appuyer sur le bouton juste en dessous "Boucle" pour que la simulation se lance en continue.
+Quand le code est exécuté une fenêtre graphique s'ouvre, l'utilisateur peut alors appuyer sur le bouton "move" pour voir la simulation étape par étape ou alors appuyer sur le bouton juste en dessous "Boucle" pour que la simulation se lance en continu.
 
 # Modification des paramètres :
 
@@ -26,21 +26,21 @@ Avant le lancement du programe l'utilisateur peut changer à sa guise les param�
 
 # Fonctionnement géneral :
 
-A l'éxecution du programe les proies et les prédateurs vont êtres placés aléatoirement sur le canvas (en bleu les proies et en rouge les prédateurs, les cases blanches sont les cases vides) et leurs positions vont être stocké dans une matrice.
+À l'exécution du programme les proies et les prédateurs vont être placés aléatoirement sur le canvas (en bleu les proies et en rouge les prédateurs, les cases blanches sont les cases vides) et leurs positions vont être stockées dans une matrice.
 
-A chaque tours une matrice va être créer contenant les cases où les prédateurs ne peuvent pas aller, ce qui va être utilisé pour la fuite des proies.
+À chaque tour une matrice va être créée contenant les cases où les prédateurs ne peuvent pas aller, ce qui va être utilisé pour la fuite des proies.
 
-Ensuite les proies et les prédateurs vont sois fuire si un prédateur est à coter de la proie ou sois se déplacer de manière aléatoire (fonction deplacement), tandis que les prédateurs vont traquer les proies si une est a distance FLAIR ou moins, dans le cas contraire ils se déplacent de manière aléatoire (fonction deplacement) et si un prédateur arrive sur la case d'une proie elle se fait manger et le prédateur gagne de l'énergie (+miam).
+Ensuite les proies et les prédateurs vont soit fuir si un prédateur est à côté de la proie ou doit se déplacer de manière aléatoire (fonction deplacement), tandis que les prédateurs vont traquer les proies si une est à distance FLAIR ou moins, dans le cas contraire ils se déplacent de manière aléatoire (fonction deplacement) et si un prédateur arrive sur la case d'une proie elle se fait manger et le prédateur gagne de l'énergie (+miam).
 
-Lors du déplacement les proies ne peuvent pas aller sur une case déjà occupé ni se déplacer de plus d'une case (droite, gauche, haut, bas, diagonales), les prédateurs ne peuvent pas aller sur une case occuper par un autre prédateur mais ils peuvent aller sur la case d'une proie afin de la manger et ils se déplacent aussi d'une seule case par tour.
+Lors du déplacement les proies ne peuvent pas aller sur une case déjà occupée ni se déplacer de plus d'une case (droite, gauche, haut, bas, diagonales), les prédateurs ne peuvent pas aller sur une case occupée par un autre prédateur mais ils peuvent aller sur la case d'une proie afin de la manger et ils se déplacent aussi d'une seule case par tour.
 
-Suite aux déplacement la fonction reprodution_predateur va vérifier l'énergie de chaque prédateur et si elle est supérieur à celle nécessaire pour la reproduction alors l'energie_predateur va être soustraite par l'energie_redateur et un nouveau prédateur va naitre sur une case aléatoire libre.
+Suite au déplacement la fonction reprodution_predateur va vérifier l'énergie de chaque prédateur et si elle est supérieure à celle nécessaire pour la reproduction alors l'energie_predateur va être soustraite par l'energie_redateur et un nouveau prédateur va naitre sur une case aléatoire libre.
 
-La fonction reproduction_proie va permettre aux proies de se reproduire si deux proies sont côte à côte et la nouvelle proie va apparaitre autour des ces deux dernières. (Un seul enfant par proie et l'enfant peut se reproduire que aux tours d'après).
+La fonction reproduction_proie va permettre aux proies de se reproduire si deux proies sont côte à côte et la nouvelle proie va apparaitre autour des ces deux dernières. (Un seul enfant par proie et l'enfant peut se reproduire qu'aux tours d'après).
 
-Ensuite les fonctions age et faim vont réspéctivement faire vieillir les proies et les prédateurs tout en vérifiant l'age maximum de l'individu, et la tue si l'age maximal est atteint (le calcul se fait dans l'autre sens ex: une proie commence a 10 ans et pert un an à chaque tour). La fonction faim, elle concerne que les prédateurs, qui vont perdre 1 d'énergie à la fin du tour et mourir si l'énergie est inférieur à 0.
+Ensuite les fonctions age et faim vont respectivement faire vieillir les proies et les prédateurs tout en vérifiant l'âge maximum de l'individu, et la tue si l'âge maximal est atteint (le calcul se fait dans l'autre sens ex: une proie commence à 10 ans et perd un an à chaque tour). La fonction faim, elle ne concerne que les prédateurs, qui vont perdre 1 d'énergie à la fin du tour et mourir si l'énergie est inférieure à 0.
 
-Enfin la fonction compteur va compter le nombre de proies et de prédateurs et l'afficher en haut de la fenêtre, elle compare aussi le nombre du tour précedent, et la fonction affichage affiche les proies et les prédateurs sur le canvas.
+Enfin la fonction compteur va compter le nombre de proies et de prédateurs et l'afficher en haut de la fenêtre, elle compare aussi le nombre du tour précédent, et la fonction affichage affiche les proies et les prédateurs sur le canvas.
 
 # Détails
 
