@@ -13,16 +13,16 @@ Quand le code est exécuté une fenêtre graphique s'ouvre, l'utilisateur peut a
 # Modification des paramètres :
 
 Avant le lancement du programe l'utilisateur peut changer à sa guise les paramètres suivants :
- -taille (modifie le nombre de cases par lignes)
- -HEIGHT et WIDTH (modifie la taille de la fenetre graphique)
- -proie_ini (modifie le nombre de proie au lancement)
--age_proie (modifie l'age maximum qu'une proie peut atteindre avant de mourir)
--predateur_ini (modifie le nombre de prédateur au lancement)
--age_predateur (modifie l'age maximum qu'un prédateur peut atteindre avant de mourir)
--energie_predateur (modifie le nombre de tour qu'un prédateur peut passer sans avoir manger de proie)
--energie_reproduction (modifie l'énergie qu'un prédateur doit atteindre pour se reproduire)
--miam (modifie le gain d'énergie quand un prédateur mange une proie)
--FLAIR (modifie la distance maximal où un prédateur peut sentir une proie et la traquer)
+taille (modifie le nombre de cases par lignes)
+HEIGHT et WIDTH (modifie la taille de la fenetre graphique)
+proie_ini (modifie le nombre de proie au lancement)
+age_proie (modifie l'age maximum qu'une proie peut atteindre avant de mourir)
+predateur_ini (modifie le nombre de prédateur au lancement)
+age_predateur (modifie l'age maximum qu'un prédateur peut atteindre avant de mourir)
+energie_predateur (modifie le nombre de tour qu'un prédateur peut passer sans avoir manger de proie)
+energie_reproduction (modifie l'énergie qu'un prédateur doit atteindre pour se reproduire)
+miam (modifie le gain d'énergie quand un prédateur mange une proie)
+FLAIR (modifie la distance maximal où un prédateur peut sentir une proie et la traquer)
 
 # Fonctionnement géneral :
 
