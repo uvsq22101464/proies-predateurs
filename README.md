@@ -8,23 +8,36 @@ https://github.com/uvsq22101464/proies-predateurs
 
 # Fonctionnement :
 
+
 Quand le code est exécuté une fenêtre graphique s'ouvre, l'utilisateur peut alors appuyer sur le bouton "move" pour voir la simulation étape par étape ou alors appuyer sur le bouton juste en dessous "Boucle" pour que la simulation se lance en continu.
 
 # Modification des paramètres :
 
+
 Avant le lancement du programe l'utilisateur peut changer à sa guise les paramètres suivants :
-taille (modifie le nombre de cases par lignes)
-HEIGHT et WIDTH (modifie la taille de la fenetre graphique)
-proie_ini (modifie le nombre de proie au lancement)
-age_proie (modifie l'age maximum qu'une proie peut atteindre avant de mourir)
-predateur_ini (modifie le nombre de prédateur au lancement)
-age_predateur (modifie l'age maximum qu'un prédateur peut atteindre avant de mourir)
-energie_predateur (modifie le nombre de tour qu'un prédateur peut passer sans avoir manger de proie)
-energie_reproduction (modifie l'énergie qu'un prédateur doit atteindre pour se reproduire)
-miam (modifie le gain d'énergie quand un prédateur mange une proie)
-FLAIR (modifie la distance maximal où un prédateur peut sentir une proie et la traquer)
+
+-taille (modifie le nombre de cases par lignes)
+
+-HEIGHT et WIDTH (modifie la taille de la fenetre graphique)
+
+-proie_ini (modifie le nombre de proie au lancement)
+
+-age_proie (modifie l'age maximum qu'une proie peut atteindre avant de mourir)
+
+-predateur_ini (modifie le nombre de prédateur au lancement)
+
+-age_predateur (modifie l'age maximum qu'un prédateur peut atteindre avant de mourir)
+
+-energie_predateur (modifie le nombre de tour qu'un prédateur peut passer sans avoir manger de proie)
+
+-energie_reproduction (modifie l'énergie qu'un prédateur doit atteindre pour se reproduire)
+
+-miam (modifie le gain d'énergie quand un prédateur mange une proie)
+
+-FLAIR (modifie la distance maximal où un prédateur peut sentir une proie et la traquer)
 
 # Fonctionnement géneral :
+
 
 À l'exécution du programme les proies et les prédateurs vont être placés aléatoirement sur le canvas (en bleu les proies et en rouge les prédateurs, les cases blanches sont les cases vides) et leurs positions vont être stockées dans une matrice.
 
@@ -45,10 +58,17 @@ Enfin la fonction compteur va compter le nombre de proies et de prédateurs et l
 # Détails
 
 -Attention proie_ini + predateur_ini ne doivent pas dépasser taille².
+
 -Les proies tout comme les prédateurs peuvent ne pas se déplacer.
+
 -Un prédateur peut mourir en se reproduisant si son energie est égale à celle de reproduction.
+
 -La fonction case_occuper ne s'arette pas meme si toute les cases de la grilles sont occuper.
+
 -Si le miam est trop proche de l'énergie necessaire de reproduction il se peut que le programe plante car les prédateurs peuvent dépasser le nombre de cases maximales (ex : 4 cases, 1 proie, 1 prédateurs, miam = 4 * energier_reproduction, ici le prédateur va se reproduire 1 fois par tours et lors de la quatrième fois il n'y aurra plus de places libre et le programe fonctionnera plus).
+
 -La matrice se lit de gauche à droite puis de haut en bas.
+
 -La matrice contient des tuples dont le premier index est l'identifiant (0 : case vide, 1 : proie, 2 : prédateur, 3 : case inaccessible), le second est l'age, le troisième est l'énergie des prédateurs et le dernier est l'énergie de reprodduction.
+
 -Afin d'éviter des problèmes de list index out of range lors de la vérification des positions alentours la matrice est entourré de (3, 3) qui ne sont pas affichés.
